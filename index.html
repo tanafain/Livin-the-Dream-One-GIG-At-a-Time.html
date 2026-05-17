@@ -4,13 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Livin' the Dream One GIG At a Time</title>
-    <!-- Loads React directly in the browser -->
     <script src="https://unpkg.com" crossorigin></script>
     <script src="https://unpkg.com" crossorigin></script>
-    <!-- Loads Babel so the browser understands React code structure -->
     <script src="https://unpkg.com"></script>
     <style>
-        /* Optional: Add any CodePen CSS styles here if things look plain! */
         body { font-family: sans-serif; background: #222; color: #fff; padding: 20px; }
     </style>
 </head>
@@ -19,24 +16,122 @@
     <div id="root"></div>
 
     <script type="text/babel">
-        // 1. We redefine your hooks since we are loading React via script tags
         const { useState, useEffect } = React;
 
         // ==========================================
-        // PASTE ALL OF YOUR CODEPEN CODE BELOW THIS LINE
-        // (Make sure to exclude that first 'import' line!)
+        // PASTE ALL OF YOUR CODEPEN CODE BELOW THIS LINE:
         // ==========================================
 
+        const SETS = [
+          { name: "SET 1", songs: ["Pride & Joy","Bad Moon Rising","Cold Shot","Whitehouse Rd.","Crazy Mama","Broken Window Serenade","Rock-n-Roll Allnite","Blue On Black","Like a Rolling Stone","Satisfied"] },
+          { name: "SET 2", songs: ["Straight to Hell","I Thank You","Red House","Black Magic Woman","Oye Como Va","Wild Side","Melissa","Peaceful Easy Feeling","Tues. Gone","No Matter What"] },
+          { name: "SET 3", songs: ["Green River","Call Me the Breeze","On the Road Again","Use Me","Cabin Down Below","Feel Like Makin' Love","Little Wing","Love Struck Baby"] },
+          { name: "SET 4", songs: ["Rebel Rebel","Hey Joe","Tues. Gone","Bad Leroy Brown","Midnite Special","Blister in the Sun","Louie Louie","Wagon Wheel"] }
+        ];
 
-        
+        const SONG_LIBRARY = [
+          { genre: "🔵 Blues & Soul", songs: ["Pride & Joy (SRV)","Cold Shot (SRV)","Love Struck Baby (SRV)","Red House (Hendrix)","Hey Joe (Hendrix)","Little Wing (Hendrix)","Use Me (Bill Withers)","I Thank You (Sam & Dave / ZZ Top)"] },
+          { genre: "🌱 Southern Rock & Country", songs: ["Bad Moon Rising (CCR)","Green River (CCR)","Midnite Special (CCR)","Whitehouse Rd. (Tyler Childers)","If Whisky Could Talk (Tyler Childers)","Tues. Gone (Lynyrd Skynyrd)","Call Me the Breeze (JJ Cale)","On the Road Again (Willie Nelson)","Melissa (Allman Brothers)","Can't You See (Marshall Tucker)","Whisky Bent & Hellbound (Hank Jr.)"] },
+          { genre: "🎸 Classic Rock & Party", songs: ["Black Magic Woman / Oye Como Va (Santana)","Like a Rolling Stone (Bob Dylan)","Peaceful Easy Feeling (Eagles)","Rebel Rebel (David Bowie)","Blister in the Sun (Violent Femmes)","Louie Louie (The Kingsmen)","Rock-n-Roll Allnite (KISS)","Feel Like Makin' Love (Bad Company)","Cabin Down Below (Tom Petty)","Straight to Hell (Drivin N Cryin)","Wagon Wheel (OCMS / Darius Rucker)"] }
+        ];
+
+        const CAPTIONS = [
+          { song: "Midnight Special 🚂", text: "Let the Midnight Special shine its light! 🪵 Law hitting those CCR notes tonight—the GIG is officially rolling. See y'all at the bar! #MidnightSpecial #CCR #ItDontMatter #GIGGIN" },
+          { song: "Love Struck Baby 🎸", text: "Bruce channeling pure SRV grit on 'Love Struck Baby' tonight! ⚡️ That Texas blues shuffle keeps the floor moving. #SRV #BluesShuffle #ItDontMatter #GIGGIN" },
+          { song: "Straight to Hell 🥃", text: "Drivin' N' Cryin' vibes in Gwinnett! 🍻 Taking it 'Straight to Hell' with Law and the guys tonight. Pull up an extra barstool! #StraightToHell #ItDontMatter #GIGGIN" },
+          { song: "Pride & Joy 🌅", text: "Nothing like watching Bruce channel the SRV spirit on 'Pride & Joy'. The whole room feels it. 🎸 Come see it live! #PrideAndJoy #SRV #ItDontMatter" },
+          { song: "Wagon Wheel 🎶", text: "Nothing like a whole crowd singing along to 'Wagon Wheel'! 🪕 Law and the guys brought the heat. Come see it live! #WagonWheel #ItDontMatter #GIGGIN" },
+          { song: "Louie Louie 🕺", text: "Always an absolute party the second 'Louie Louie' starts up! 🥳 Spirit's alive and family is here. See you down front! #LouieLouie #IDM #GIGGIN" },
+          { song: "Cabin Down Below 🪵", text: "Mountain air and 'Cabin Down Below' vibes. 🌲 Throwback to Lawrence doing Tom Petty proud. This one always hits different. #TomPetty #CabinDown Below #GIGGIN" },
+          { song: "Cold Shot 🧊", text: "Bruce digging deep into 'Cold Shot' tonight. 🎸 That heavy SRV grit is in the DNA of this band. Come feel it live! #ColdShot #SRV" }
+        ];
+
+        const SLOGANS = {
+          Hype: "Gwinnett County, pull up! 🤠 The guys are geared up and bringing the noise tonight!",
+          Legacy: "Thinking back on those unforgettable nights. Allie's spirit is always right here with us.",
+          Booking: "Now routing weekend dates for the quarter! Bring that signature energy to your venue."
+        };
+
+        function App() {
+          const [currentTab, setCurrentTab] = useState("generator");
+          const [activeSet, setActiveSet] = useState("");
+          const [selectedGenre, setSelectedGenre] = useState("");
+          const [selectedSong, setSelectedSong] = useState("");
+          const [selectedSlogan, setSelectedSlogan] = useState("");
+          const [generatedText, setGeneratedText] = useState("");
+
+          const handleGenerate = () => {
+            let parts = [];
+            if (activeSet) parts.push(`We're hitting you with ${activeSet} tonight!`);
+            if (selectedSong) {
+              const capObj = CAPTIONS.find(c => c.song === selectedSong);
+              if (capObj) parts.push(capObj.text);
+            }
+            if (selectedSlogan) parts.push(SLOGANS[selectedSlogan]);
+            setGeneratedText(parts.join("\n\n"));
+          };
+
+          return (
+            <div style={{ maxWidth: '600px', margin: '0 auto', background: '#333', padding: '20px', borderRadius: '8px' }}>
+              <h1 style={{ textAlign: 'center', color: '#ffcc00' }}>🎸 Giggin' HQ Promo Tool</h1>
+              
+              <div style={{ display: 'flex', gap: '10px', marginBottom: '20px' }}>
+                <button onClick={() => setCurrentTab("generator")} style={{ flex: 1, padding: '10px', background: currentTab === "generator" ? "#ffcc00" : "#555", color: '#000', border: 'none', borderRadius: '4px', fontWeight: 'bold' }}>Caption Generator</button>
+                <button onClick={() => setCurrentTab("library")} style={{ flex: 1, padding: '10px', background: currentTab === "library" ? "#ffcc00" : "#555", color: '#000', border: 'none', borderRadius: '4px', fontWeight: 'bold' }}>Song Sets</button>
+              </div>
+
+              {currentTab === "generator" ? (
+                <div>
+                  <h3>1. Select Current Set (Optional)</h3>
+                  <select onChange={(e) => setActiveSet(e.target.value)} style={{ width: '100%', padding: '10px', marginBottom: '15px' }}>
+                    <option value="">-- Choose Set --</option>
+                    {SETS.map(s => <option key={s.name} value={s.name}>{s.name}</option>)}
+                  </select>
+
+                  <h3>2. Select Featured Song</h3>
+                  <select onChange={(e) => setSelectedSong(e.target.value)} style={{ width: '100%', padding: '10px', marginBottom: '15px' }}>
+                    <option value="">-- Choose Song Content --</option>
+                    {CAPTIONS.map(c => <option key={c.song} value={c.song}>{c.song}</option>)}
+                  </select>
+
+                  <h3>3. Select Slogan Hook</h3>
+                  <select onChange={(e) => setSelectedSlogan(e.target.value)} style={{ width: '100%', padding: '10px', marginBottom: '25px' }}>
+                    <option value="">-- Choose Slogan --</option>
+                    {Object.keys(SLOGANS).map(k => <option key={k} value={k}>{k}</option>)}
+                  </select>
+
+                  <button onClick={handleGenerate} style={{ width: '100%', padding: '12px', background: '#28a745', color: '#fff', border: 'none', borderRadius: '4px', fontSize: '16px', fontWeight: 'bold' }}>Generate Promo Copy</button>
+
+                  {generatedText && (
+                    <div style={{ marginTop: '20px', background: '#111', padding: '15px', borderRadius: '5px', border: '1px solid #ffcc00' }}>
+                      <h4 style={{ color: '#ffcc00', marginTop: 0 }}>Generated Output:</h4>
+                      <p style={{ whiteSpace: 'pre-wrap' }}>{generatedText}</p>
+                    </div>
+                  )}
+                </div>
+              ) : (
+                <div>
+                  <h3>Browse Song Library</h3>
+                  {SONG_LIBRARY.map(lib => (
+                    <div key={lib.genre} style={{ marginBottom: '15px', background: '#444', padding: '10px', borderRadius: '4px' }}>
+                      <strong style={{ color: '#ffcc00' }}>{lib.genre}</strong>
+                      <ul style={{ paddingLeft: '20px', marginTop: '5px' }}>
+                        {lib.songs.map(song => <li key={song}>{song}</li>)}
+                      </ul>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          );
+        }
+
         // ==========================================
         // PASTE ALL OF YOUR CODEPEN CODE ABOVE THIS LINE
         // ==========================================
 
-        // 2. This renders your main component into the page. 
-        // CHANGE 'App' below to whatever your main function component is named in CodePen!
-        const root = tragedies.createRoot(document.getElementById('root'));
-        ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
     </script>
 
 </body>
