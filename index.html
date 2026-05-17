@@ -1,853 +1,348 @@
-import { useState, useEffect } from "react";
-
-// ── DATA ──────────────────────────────────────────────────────────────────────
-
-const SETS = [
-  { name: "SET 1", songs: ["Pride & Joy","Bad Moon Rising","Cold Shot","Whitehouse Rd.","Crazy Mama","Broken Window Serenade","Rock-n-Roll Allnite","Blue On Black","Like a Rolling Stone","Satisfied"] },
-  { name: "SET 2", songs: ["Straight to Hell","I Thank You","Red House","Black Magic Woman","Oye Como Va","Wild Side","Melissa","Peaceful Easy Feeling","Tues. Gone","No Matter What"] },
-  { name: "SET 3", songs: ["Green River","Call Me the Breeze","On the Road Again","Use Me","Cabin Down Below","Feel Like Makin' Love","Little Wing","Love Struck Baby"] },
-  { name: "SET 4", songs: ["Rebel Rebel","Hey Joe","Tues. Gone","Bad Leroy Brown","Midnite Special","Blister in the Sun","Louie Louie","Wagon Wheel"] },
-];
-
-const SONG_LIBRARY = [
-  { genre: "🔵 Blues & Soul", songs: ["Pride & Joy (SRV)","Cold Shot (SRV)","Love Struck Baby (SRV)","Red House (Hendrix)","Hey Joe (Hendrix)","Little Wing (Hendrix)","Use Me (Bill Withers)","I Thank You (Sam & Dave / ZZ Top)"] },
-  { genre: "🌵 Southern Rock & Country", songs: ["Bad Moon Rising (CCR)","Green River (CCR)","Midnite Special (CCR)","Whitehouse Rd. (Tyler Childers)","If Whisky Could Talk (Tyler Childers)","Tues. Gone (Lynyrd Skynyrd)","Call Me the Breeze (JJ Cale)","On the Road Again (Willie Nelson)","Melissa (Allman Brothers)","Can't You See (Marshall Tucker)","Whisky Bent & Hellbound (Hank Jr.)"] },
-  { genre: "🎸 Classic Rock & Party", songs: ["Black Magic Woman / Oye Como Va (Santana)","Like a Rolling Stone (Bob Dylan)","Peaceful Easy Feeling (Eagles)","Rebel Rebel (David Bowie)","Blister in the Sun (Violent Femmes)","Louie Louie (The Kingsmen)","Rock-n-Roll Allnite (KISS)","Feel Like Makin' Love (Bad Company)","Cabin Down Below (Tom Petty)","Straight to Hell (Drivin N Cryin)","Wagon Wheel (OCMS / Darius Rucker)"] },
-];
-
-const CAPTIONS = [
-  { song: "Midnight Special 🚂", text: "Let the Midnight Special shine its light! 🚂 Law hitting those CCR notes tonight — the GIG is officially rolling. See y'all at the bar! #MidnightSpecial #CCR #ItDontMatter #GIGGIN" },
-  { song: "Love Struck Baby 🎸", text: "Bruce channeling pure SRV grit on 'Love Struck Baby' tonight! 🎸 That Texas blues shuffle keeps the floor moving. #SRV #BluesShuffle #ItDontMatter #GIGGIN" },
-  { song: "Straight to Hell 🥃", text: "Drivin' N' Cryin' vibes in Gwinnett! 🥃 Taking it 'Straight to Hell' with Law and the guys tonight. Pull up an extra barstool! #StraightToHell #ItDontMatter #GIGGIN" },
-  { song: "Pride & Joy 💪", text: "Nothing like watching Bruce channel the SRV spirit on 'Pride & Joy'. The whole room feels it. 🎸 Come see it live! #PrideAndJoy #SRV #ItDontMatter" },
-  { song: "Wagon Wheel 🎶", text: "Nothing like a whole crowd singing along to 'Wagon Wheel'! 🎶 Law and the guys brought the heat. Come see it live! #WagonWheel #ItDontMatter #GIGGIN" },
-  { song: "Louie Louie 🎉", text: "Always an absolute party the second 'Louie Louie' starts up! 🎉 Spirit's alive and family is here. See you down front! #LouieLouie #IDM #GIGGIN" },
-  { song: "Cabin Down Below 🌲", text: "Mountain air and 'Cabin Down Below' vibes. 🌲 Throwback to Lawrence doing Tom Petty proud. This one always hits different. #TomPetty #CabinDownBelow #GIGGIN" },
-  { song: "Cold Shot ❄️", text: "Bruce digging deep into 'Cold Shot' tonight. ❄️ That heavy SRV grit is in the DNA of this band. Come feel it live! #ColdShot #SRV #ItDontMatter" },
-];
-
-const SLOGANS = {
-  Hype: ["Gwinnett County, pull up! 🍻 The guys are geared up and bringing the noise tonight. See y'all down front! #ItDontMatter #GIGGIN", "The heat is officially on stage tonight. 🎸 Pack the bar — let's get loud. #ItDontMatter #LiveMusicGwinnett", "It Don't Matter… we're just GIGGIN'! Live rock anthems, cold drinks, zero excuses. Pull up a barstool! 🔥 #BEEEEEILLLL #GIGGIN"],
-  Legacy: ["Thinking back on those unforgettable nights. Allie's spirit is always at the GIG when the guys play. 💜✨ #SpiritOfTheGig #Legacy", "Music is the heartbeat of this family. Throwback to those mountain air memories at Sneakin' Creek! ✨ #SneakinCreek #TBT", "Years of playing, decades of memories. Thanks to everyone who keeps showing up. 🎶 #ItDontMatter"],
-  Booking: ["Now routing weekend dates for the quarter! Bring that signature backyard party vibe to your venue. 📅 Contact us via DM! #Booking", "Southern rock grit and Gwinnett soul. DM us to book the guys for your next event! 🎸 #ItDontMatter"],
-  Chill: ["Cold beer and classic rock. The only way to spend a Sunday. 🍺 #SweetHomeGIGGIN", "Unplugged, dialed in, and feeling the groove. Join us on the patio tonight. 🌅 #PatioChill", "Good friends, great music, zero agenda. Keeping it simple tonight. ✌️ #ItDontMatter"],
-};
-
-const PUNS = ["GIGGIN' Management","GIGGIN' Around","When You Just Don't GIG It","It Don't Matter… We're GIGGIN'","GIGGIN' Our Ducks in a Row","Just GIG It","Everybody's GIGGIN' It","GIG it Together","Where the GIGGIN' Happens","None of Your GIGGIN' Business","Backstage GIGGIN'","GIG-Access Only","GIG it Done","No GIGS Left Behind","Let's Get GIGGIN' With It","Time to Get GIGGIN'","GIGGIN' it Real","Keep Calm and GIG On","The GIG is Up","GIG it or Leave It","GIGGIN' is a State of Mind","It's GIGGIN' Time","GIG You Covered","GIGGIN' the Dream","Behind the GIGGINS","Livin' the Dream — One GIG at a Time","GIG it Up a Notch","Gettin' GIGGY With It","Play That GIGGIN' Music","Sweet Home GIGGIN'","GIGS Fly When You're Having Fun","Take a Walk on the GIG Side","GIG Drop","Where My GIGS At","Ready Set GIG","All About That GIG","GIGS of Our Lives","As the GIG Turns","GIGGIN' Around the Clock","Two GIGS Are Better Than One","Mind Your GIGS","Make Some GIGS","Locked & GIG'd","Midnight GIGGER","Bad Moon GIGGIN'","Follow the GIGGIN' Road","Gone GIGGIN'"];
-
-const VENUES = [
-  { name: "Will Henry's Pub & Grub", loc: "Lawrenceville, GA", note: "Primary anchor • Bar + Patio", star: true },
-  { name: "El Molcajete", loc: "Lawrenceville, GA", note: "Outdoor stage, great for families", star: false },
-  { name: "Slow Pour Brewing", loc: "Lawrenceville, GA", note: "High visibility deck venue", star: false },
-  { name: "Castleberry Cellars", loc: "Cumming, GA", note: "Premium expansion target", star: false },
-  { name: "Sneakin' Creek Festival", loc: "Hiawassee, GA", note: "Annual mountain festival", star: false },
-];
-
-const MAMA_CHECKS = ["Morning strategy session & coffee run with Kim","Confirm venue load-in time with manager","Post a 'See You Tonight' caption to Facebook/Instagram","Pack the GIG cooler — water, snacks, extra ice","iPad charged to 100% — this app is open and ready","Pull up the setlist and screenshot for quick reference"];
-const GUYS_CHECKS = ["Load all gear cleanly — no scratches on the amp!","Unload and set up at the venue stage","Run soundcheck — dial in the mix","Quick run-through of the night's set order","GIG IT DONE: Rock the full set and enjoy the crowd","Settle up with the venue — Mama Kathy handles the split 💰"];
-
-const BOOKING_EMAIL = `Subject: Live Music Booking — It Don't Matter (4-Piece Rock Band)
-
-Hi [Venue Manager Name],
-
-I hope your week is going well! My name is Kathy, and I manage It Don't Matter — a high-energy 4-piece classic and southern rock band active throughout Gwinnett County and the surrounding region.
-
-We specialize in packed, interactive sets featuring crowds singing along to iconic anthems from CCR, SRV, Tom Petty, and Drivin' N' Cryin'. Our setup features deep rhythmic grooves layered with acoustic drive and vintage electric leads — perfectly dialed for restaurant decks, pubs, and private events.
-
-We're currently routing dates for the upcoming quarter and would love to discuss an open weekend calendar block on your stage.
-
-Would you have a few minutes this week to connect?
-
-Best,
-Kathy & Kim
-GIGGIN' Management Team`;
-
-const NEWSLETTER = `Subject: A Note from It Don't Matter (Monthly Update)
-
-Hi there!
-
-We had an incredible time on our recent Gwinnett runs. Thank you to everyone who packed out the bars! Here's what's coming up this month...
-
-[ADD UPCOMING DATES HERE]
-
-See you down front!
-Law, Bruce, Bill & Dan
-It Don't Matter
-Managed by Giggin' Management`;
-
-const RIDER = `IT DON'T MATTER — STAGE TECHNICAL RIDER
-
-4-Piece Configuration:
-• 1 Lead Vocal Mic (Law — Acoustic/Vocals)
-• 1 Electric Guitar Amp Direct Input (Bruce — Lead Electric)
-• 1 Cajon Microphone (Bill — Cajon/Vocals)  
-• 2 Percussion Mic Lines (Dan — Congas/Bongos)
-
-Monitor mix: Clean low-pocket rhythm focus, Law's vocal up front.
-No click track needed. Self-directed set transitions.
-
-Contact: Giggin' Management Team`;
-
-const EPK = `IT DON'T MATTER — Artist Bio
-
-It Don't Matter is a high-energy 4-piece classic and southern rock outfit based in Gwinnett County, Georgia. Fronted by Lawrence's gritty acoustic drive and charged by Bruce's Texas SRV electric leads, the band brings a full-room experience every night.
-
-With a 30+ song repertoire spanning Stevie Ray Vaughan, CCR, Tom Petty, Lynyrd Skynyrd, and Drivin' N' Cryin', IDM specializes in packed, interactive sets where the crowd sings every word.
-
-Whether it's a packed bar, outdoor patio, or private event, It Don't Matter delivers the backyard-party energy that keeps fans coming back.
-
-Booking: Giggin' Management Team`;
-
-// ── STYLES ────────────────────────────────────────────────────────────────────
-const G = {
-  gold: "#C9A84C",
-  goldLight: "#E8C96D",
-  ink: "#0D0D0D",
-  cream: "#F5F0E8",
-  rust: "#8B2E0F",
-  green: "#1A6B3A",
-  card: "#fff",
-  border: "#E0D8CC",
-};
-
-// ── HELPER COMPONENTS ─────────────────────────────────────────────────────────
-
-function Toast({ msg }) {
-  return (
-    <div style={{ position:"fixed", bottom:24, left:"50%", transform:"translateX(-50%)", background:G.ink, color:G.gold, fontWeight:700, fontSize:13, letterSpacing:"0.1em", textTransform:"uppercase", padding:"12px 24px", borderRadius:50, border:`1px solid ${G.gold}`, zIndex:9999, whiteSpace:"nowrap", pointerEvents:"none" }}>
-      {msg}
-    </div>
-  );
-}
-
-function SectionHeader({ label, title, light }) {
-  return (
-    <div style={{ marginBottom:24 }}>
-      <div style={{ fontSize:10, fontWeight:700, letterSpacing:"0.35em", textTransform:"uppercase", color:G.gold, marginBottom:4 }}>{label}</div>
-      <div style={{ fontFamily:"'Bebas Neue', cursive", fontSize:32, letterSpacing:"0.04em", color: light ? "#fff" : G.ink, lineHeight:1 }}>{title}</div>
-    </div>
-  );
-}
-
-function Card({ children, style }) {
-  return <div style={{ background:G.card, borderRadius:16, border:`1px solid ${G.border}`, overflow:"hidden", ...style }}>{children}</div>;
-}
-
-function DarkCard({ children, style }) {
-  return <div style={{ background:G.ink, borderRadius:16, color:"#fff", overflow:"hidden", ...style }}>{children}</div>;
-}
-
-function GoldCard({ children, style }) {
-  return <div style={{ background:"linear-gradient(135deg,#1a1400 0%,#2D2100 100%)", border:`1px solid ${G.gold}`, borderRadius:16, color:"#fff", overflow:"hidden", ...style }}>{children}</div>;
-}
-
-function Btn({ children, onClick, style, variant="gold" }) {
-  const base = { fontSize:11, fontWeight:700, letterSpacing:"0.15em", textTransform:"uppercase", padding:"11px 18px", borderRadius:8, cursor:"pointer", border:"none", display:"inline-flex", alignItems:"center", gap:6, transition:"all 0.15s", width:"100%" };
-  const variants = {
-    gold: { background:G.gold, color:G.ink },
-    ink: { background:G.ink, color:"#fff" },
-    outline: { background:"transparent", border:`2px solid ${G.gold}`, color:G.gold },
-    green: { background:G.green, color:"#fff" },
-    rust: { background:G.rust, color:"#fff" },
-  };
-  return <button onClick={onClick} style={{ ...base, ...variants[variant], justifyContent:"center", ...style }}>{children}</button>;
-}
-
-function CopyBtn({ text, label="Copy", variant="ink" }) {
-  const [copied, setCopied] = useState(false);
-  const handleCopy = () => {
-    if (!text) return;
-    navigator.clipboard.writeText(text).catch(() => {
-      const el = document.createElement("textarea");
-      el.value = text;
-      document.body.appendChild(el);
-      el.select();
-      document.execCommand("copy");
-      document.body.removeChild(el);
-    });
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
-  };
-  return <Btn onClick={handleCopy} variant={variant}>{copied ? "✅ Copied!" : label}</Btn>;
-}
-
-// ── TABS ──────────────────────────────────────────────────────────────────────
-
-const TABS = [
-  { id:"dash",    label:"📊 Overview" },
-  { id:"real",    label:"🎤 GIGGIN' it Real" },
-  { id:"just",    label:"📅 Just GIG It" },
-  { id:"happens", label:"🎨 Where the GIGGIN' Happens" },
-  { id:"play",    label:"🎵 Play That GIGGIN' Music" },
-  { id:"behind",  label:"💰 Behind the GIGGINS" },
-  { id:"road",    label:"✨ Roadmap" },
-  { id:"sweet",   label:"💝 Sweet Home" },
-  { id:"covered", label:"🛶 GIG You Covered" },
-];
-
-// ── TAB CONTENT COMPONENTS ────────────────────────────────────────────────────
-
-function TabDash({ calendar, vaultCount }) {
-  return (
-    <div>
-      <SectionHeader label="Agency Status" title="Welcome to the Office" />
-      <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:16, marginBottom:20 }}>
-        <GoldCard style={{ padding:28 }}>
-          <div style={{ fontFamily:"'Playfair Display',serif", fontSize:26, fontStyle:"italic", color:G.goldLight, marginBottom:12 }}>"Hey Mama & Kim!"</div>
-          <p style={{ fontSize:13, color:"#ccc", lineHeight:1.7, marginBottom:16 }}>Everything you need to run the guys is right here. Set list, flyers, captions, finances — all in one place. No more loose papers or lost photos.</p>
-          <p style={{ fontSize:11, fontWeight:700, letterSpacing:"0.2em", textTransform:"uppercase", color:G.gold, borderTop:`1px solid #333`, paddingTop:14 }}>It Don't Matter… I'm GIGGIN' 🎸</p>
-        </GoldCard>
-        <Card style={{ padding:20 }}>
-          <div style={{ fontSize:10, fontWeight:700, letterSpacing:"0.3em", textTransform:"uppercase", color:G.gold, marginBottom:12 }}>The Band</div>
-          {[["LAW","Vocals / Acoustic","The frontman & grit of IDM"],["BRUCE","Lead Electric","Pure Texas SRV soul"],["BEEEEEILLLL","Cajon / Vocals","The high-energy party engine 🎉"],["DAN","Percussion / Congas","The rock-solid rhythmic anchor"]].map(([name,role,bio])=>(
-            <div key={name} style={{ display:"flex", justifyContent:"space-between", alignItems:"flex-start", padding:"10px 0", borderBottom:`1px solid ${G.border}` }}>
-              <div>
-                <div style={{ fontFamily:"'Bebas Neue',cursive", fontSize:18, letterSpacing:"0.06em" }}>{name}</div>
-                <div style={{ fontSize:10, fontWeight:700, letterSpacing:"0.2em", textTransform:"uppercase", color:G.gold }}>{role}</div>
-              </div>
-              <div style={{ fontSize:11, color:"#888", fontStyle:"italic", maxWidth:140, textAlign:"right" }}>{bio}</div>
-            </div>
-          ))}
-        </Card>
-      </div>
-      <div style={{ display:"grid", gridTemplateColumns:"repeat(4,1fr)", gap:12 }}>
-        {[["Shows Booked", calendar.length, G.gold],["Vault Photos", vaultCount, "#888"],["Sets Ready","4","#888"],["Region","Gwinnett","#888"]].map(([label,val,color])=>(
-          <Card key={label} style={{ padding:20, textAlign:"center", borderBottom:`4px solid ${G.gold}` }}>
-            <div style={{ fontFamily:"'Bebas Neue',cursive", fontSize:36, color: label==="Shows Booked" ? G.green : G.ink, lineHeight:1 }}>{val}</div>
-            <div style={{ fontSize:10, fontWeight:700, letterSpacing:"0.25em", textTransform:"uppercase", color:"#999", marginTop:4 }}>{label}</div>
-          </Card>
-        ))}
-      </div>
-    </div>
-  );
-}
-
-function TabReal() {
-  const [slogan, setSlogan] = useState("Tap a vibe above to generate a caption instantly.");
-  const [aiLoading, setAiLoading] = useState(false);
-
-  const genSlogan = (vibe) => {
-    const arr = SLOGANS[vibe];
-    setSlogan(arr[Math.floor(Math.random() * arr.length)]);
-  };
-
-  const genAI = async () => {
-    setAiLoading(true);
-    setSlogan("Writing your caption...");
-    try {
-      const res = await fetch("https://api.anthropic.com/v1/messages", {
-        method:"POST",
-        headers:{ "Content-Type":"application/json" },
-        body: JSON.stringify({
-          model:"claude-sonnet-4-20250514",
-          max_tokens:1000,
-          messages:[{ role:"user", content:`Write one Facebook/Instagram caption for a southern rock & blues band called "It Don't Matter" from Gwinnett County, GA. Members: Law (vocals/acoustic), Bruce (lead electric/SRV style), Bill "BEEEEEILLLL" (cajon/vocals — high energy party vibe), Dan (congas — steady rhythmic anchor). Vibe: backyard-party, family-friendly, chill but rowdy. Include 3-4 hashtags. Keep it under 3 sentences. Sound authentic, not corporate. Return ONLY the caption text.` }]
-        })
-      });
-      const data = await res.json();
-      setSlogan(data.content?.[0]?.text || "Try again!");
-    } catch { setSlogan("AI unavailable — use the vibe buttons above!"); }
-    setAiLoading(false);
-  };
-
-  return (
-    <div>
-      <SectionHeader label="Social Media & Content" title="GIGGIN' it Real" />
-
-      {/* Slogan Machine */}
-      <DarkCard style={{ padding:24, marginBottom:20 }}>
-        <div style={{ fontFamily:"'Bebas Neue',cursive", fontSize:26, color:G.gold, letterSpacing:"0.06em", marginBottom:16 }}>Social Slogan Machine ⚡</div>
-        <div style={{ display:"flex", gap:8, flexWrap:"wrap", marginBottom:16 }}>
-          {["Hype","Legacy","Booking","Chill"].map(v => (
-            <button key={v} onClick={()=>genSlogan(v)} style={{ fontSize:11, fontWeight:700, letterSpacing:"0.12em", textTransform:"uppercase", padding:"9px 16px", borderRadius:8, cursor:"pointer", background:"transparent", border:`2px solid ${G.gold}`, color:G.gold }}>
-              {v==="Hype"?"🔥 Hype":v==="Legacy"?"💜 Memory Lane":v==="Booking"?"📅 Outreach":"🍺 Patio Chill"}
-            </button>
-          ))}
-          <button onClick={genAI} disabled={aiLoading} style={{ fontSize:11, fontWeight:700, letterSpacing:"0.12em", textTransform:"uppercase", padding:"9px 16px", borderRadius:8, cursor:"pointer", background:G.gold, border:"none", color:G.ink }}>
-            {aiLoading ? "Writing..." : "✨ AI Write It"}
-          </button>
-        </div>
-        <div style={{ background:"#111", border:"1px solid #333", borderRadius:12, padding:20, fontFamily:"'Playfair Display',serif", fontStyle:"italic", fontSize:16, color:"#eee", minHeight:80, display:"flex", alignItems:"center", justifyContent:"center", textAlign:"center", marginBottom:14, lineHeight:1.6 }}>
-          {slogan}
-        </div>
-        <CopyBtn text={slogan} label="Copy Caption" variant="gold" />
-      </DarkCard>
-
-      {/* Legacy Stories */}
-      <div style={{ fontFamily:"'Bebas Neue',cursive", fontSize:22, letterSpacing:"0.06em", marginBottom:12 }}>The GIGS of Our Lives 💜</div>
-      <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:16, marginBottom:24 }}>
-        {[
-          { title:"Remembering Allie 💜", id:"allie", text:`"Thinking back to those packed nights at Famous Joe's. Allie wasn't just a voice on stage — she was family. Her laughter, her soul, and her music are always present at the GIG when the guys play. We still feel that harmony every time Law hits the mic. ✨ #SpiritOfTheGig #Legacy #ItDontMatter"` },
-          { title:"Sneakin' Creek Fest ✌️", id:"creek", text:`"Crisp mountain air, cold beer, and Petty vibes echoing through the Hiawassee hills. Looking back at Law, Bruce, BEEEEEILLLL, and Dan tearing it up at the Sneakin' Creek Fest. Nothing like a mountain crowd singing every word. Ready for the next run? 🏕️ #SneakinCreek #HiawasseeMusic #TBT"` },
-        ].map(s => (
-          <Card key={s.id} style={{ padding:20, display:"flex", flexDirection:"column", gap:12 }}>
-            <div style={{ fontSize:10, fontWeight:700, letterSpacing:"0.3em", textTransform:"uppercase", color:G.gold }}>{s.title}</div>
-            <p style={{ fontSize:13, fontStyle:"italic", color:"#444", lineHeight:1.6, flex:1 }}>{s.text}</p>
-            <CopyBtn text={s.text} label="Copy Story" />
-          </Card>
-        ))}
-      </div>
-
-      {/* Song Captions */}
-      <div style={{ fontFamily:"'Bebas Neue',cursive", fontSize:22, letterSpacing:"0.06em", marginBottom:12 }}>Ready-to-Post Song Captions</div>
-      <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:14, marginBottom:24 }}>
-        {CAPTIONS.map(c => (
-          <Card key={c.song} style={{ padding:18, display:"flex", flexDirection:"column", gap:10 }}>
-            <div style={{ fontSize:10, fontWeight:700, letterSpacing:"0.25em", textTransform:"uppercase", color:G.gold }}>{c.song}</div>
-            <p style={{ fontSize:12, fontStyle:"italic", color:"#444", lineHeight:1.6, flex:1 }}>"{c.text}"</p>
-            <CopyBtn text={c.text} label="Copy Caption" />
-          </Card>
-        ))}
-      </div>
-
-      {/* Puns Cloud */}
-      <Card style={{ padding:24 }}>
-        <div style={{ fontSize:10, fontWeight:700, letterSpacing:"0.3em", textTransform:"uppercase", color:G.gold, marginBottom:6 }}>Click Any to Copy</div>
-        <div style={{ fontFamily:"'Bebas Neue',cursive", fontSize:22, letterSpacing:"0.06em", marginBottom:14 }}>GIGGIDY GIGS — Master Puns Index</div>
-        <div style={{ display:"flex", flexWrap:"wrap", gap:6 }}>
-          {PUNS.map(p => <PunTag key={p} text={p} />)}
-        </div>
-      </Card>
-    </div>
-  );
-}
-
-function PunTag({ text }) {
-  const [copied, setCopied] = useState(false);
-  return (
-    <span onClick={()=>{ navigator.clipboard.writeText(text).catch(()=>{}); setCopied(true); setTimeout(()=>setCopied(false),1500); }}
-      style={{ display:"inline-block", background: copied ? G.gold : G.cream, border:`1px solid ${G.border}`, borderRadius:50, padding:"5px 13px", fontSize:11, fontWeight:700, letterSpacing:"0.08em", textTransform:"uppercase", color: copied ? G.ink : G.ink, cursor:"pointer", margin:2, transition:"all 0.15s" }}>
-      {copied ? "✅ Copied" : text}
-    </span>
-  );
-}
-
-function TabJust({ calendar, setCalendar }) {
-  const [venue, setVenue] = useState("");
-  const [date, setDate] = useState("");
-
-  const add = () => {
-    if (!venue || !date) return;
-    const updated = [...calendar, { venue, date, id: Date.now() }];
-    setCalendar(updated);
-    localStorage.setItem("idm_cal", JSON.stringify(updated));
-    setVenue(""); setDate("");
-  };
-
-  const del = (id) => {
-    const updated = calendar.filter(g => g.id !== id);
-    setCalendar(updated);
-    localStorage.setItem("idm_cal", JSON.stringify(updated));
-  };
-
-  const posterText = "IT DON'T MATTER — LIVE SHOWS\n\n" + calendar.map(g => `${g.venue.toUpperCase().padEnd(28)} ${g.date}`).join("\n") + '\n\n"It Don\'t Matter… I\'m GIGGIN\'"\nManaged by Giggin\' Management Team';
-
-  return (
-    <div>
-      <SectionHeader label="Tour Routing" title="Just GIG It — Schedule" />
-      <DarkCard style={{ padding:24, marginBottom:20 }}>
-        <div style={{ fontFamily:"'Bebas Neue',cursive", fontSize:20, color:G.gold, letterSpacing:"0.08em", marginBottom:14 }}>GIGGIN' Our Ducks in a Row 📅</div>
-        <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:12, marginBottom:12 }}>
-          <div>
-            <div style={{ fontSize:10, fontWeight:700, letterSpacing:"0.2em", textTransform:"uppercase", color:"#666", marginBottom:6 }}>Venue</div>
-            <input value={venue} onChange={e=>setVenue(e.target.value)} placeholder="e.g. Will Henry's Pub" style={{ width:"100%", padding:"11px 14px", borderRadius:10, border:"1.5px solid #333", background:"#1a1a1a", color:"#fff", fontSize:14, fontWeight:500, outline:"none" }} />
-          </div>
-          <div>
-            <div style={{ fontSize:10, fontWeight:700, letterSpacing:"0.2em", textTransform:"uppercase", color:"#666", marginBottom:6 }}>Date & Time</div>
-            <input value={date} onChange={e=>setDate(e.target.value)} placeholder="e.g. June 14 @ 9pm" style={{ width:"100%", padding:"11px 14px", borderRadius:10, border:"1.5px solid #333", background:"#1a1a1a", color:"#fff", fontSize:14, fontWeight:500, outline:"none" }} />
-          </div>
-        </div>
-        <Btn onClick={add} variant="gold">+ Add Confirmed Date</Btn>
-      </DarkCard>
-
-      {/* Calendar list */}
-      <div style={{ display:"flex", flexDirection:"column", gap:10, marginBottom:24 }}>
-        {calendar.length === 0 && <p style={{ color:"#888", fontStyle:"italic", fontSize:13 }}>No shows added yet — add one above!</p>}
-        {calendar.map(g => (
-          <div key={g.id} style={{ background:G.ink, border:"1px solid #333", borderRadius:12, padding:"14px 16px", display:"flex", justifyContent:"space-between", alignItems:"center", color:"#fff" }}>
-            <div>
-              <div style={{ fontWeight:700, fontSize:14 }}>{g.venue}</div>
-              <div style={{ fontSize:12, color:G.gold }}>{g.date}</div>
-            </div>
-            <button onClick={()=>del(g.id)} style={{ background:"none", border:"none", color:"#555", cursor:"pointer", fontSize:18, padding:"4px 8px" }}>✕</button>
-          </div>
-        ))}
-      </div>
-
-      {/* Poster */}
-      <div style={{ background:G.ink, borderRadius:16, padding:32, border:"1px solid #333", marginBottom:16 }}>
-        <div style={{ fontFamily:"'Bebas Neue',cursive", fontSize:38, color:G.gold, letterSpacing:"0.1em", borderBottom:"1px solid #333", paddingBottom:12, marginBottom:20 }}>LIVE TOUR LISTING</div>
-        {calendar.length === 0 && <p style={{ color:"#555", fontStyle:"italic", fontSize:13 }}>Add gigs above to populate this poster.</p>}
-        {calendar.map(g => (
-          <div key={g.id} style={{ display:"flex", justifyContent:"space-between", alignItems:"baseline", padding:"11px 0", borderBottom:"1px solid #1e1e1e" }}>
-            <div style={{ fontFamily:"'Bebas Neue',cursive", fontSize:20, color:"#ddd", letterSpacing:"0.06em" }}>{g.venue}</div>
-            <div style={{ fontSize:12, fontWeight:600, color:G.gold, letterSpacing:"0.1em" }}>{g.date}</div>
-          </div>
-        ))}
-        <div style={{ textAlign:"center", borderTop:"1px solid #222", paddingTop:16, marginTop:20 }}>
-          <p style={{ fontFamily:"'Playfair Display',serif", fontStyle:"italic", color:G.gold, fontSize:14 }}>"It Don't Matter… I'm GIGGIN'"</p>
-          <p style={{ fontSize:10, color:"#444", letterSpacing:"0.2em", textTransform:"uppercase", marginTop:4 }}>Managed by Giggin' Management Team</p>
-        </div>
-      </div>
-      <CopyBtn text={posterText} label="Copy Tour Poster Text" variant="gold" />
-    </div>
-  );
-}
-
-function TabHappens({ vault, setVault }) {
-  const [neonVenue, setNeonVenue] = useState("WILL HENRY'S PUB");
-  const [neonDate,  setNeonDate]  = useState("9:00 PM • NO COVER");
-  const [rusticVenue, setRusticVenue] = useState("EL MOLCAJETE");
-  const [rusticDate,  setRusticDate]  = useState("SATURDAY • 7:00 PM");
-  const [patioVenue, setPatioVenue] = useState("THE LAKE HOUSE");
-  const [patioDate,  setPatioDate]  = useState("SUNDAY • 4:00 PM");
-
-  const upload = (e) => {
-    const file = e.target.files[0]; if (!file) return;
-    const reader = new FileReader();
-    reader.onload = ev => {
-      const updated = [...vault, ev.target.result];
-      setVault(updated);
-      localStorage.setItem("idm_vault", JSON.stringify(updated));
-    };
-    reader.readAsDataURL(file);
-  };
-
-  const delPhoto = (i) => {
-    const updated = vault.filter((_,idx)=>idx!==i);
-    setVault(updated);
-    localStorage.setItem("idm_vault", JSON.stringify(updated));
-  };
-
-  const flyerText = (venue, date, style) => `IT DON'T MATTER\nLive ${style}\n${venue}\n${date}`;
-
-  return (
-    <div>
-      <SectionHeader label="Media & Design Studio" title="Where the GIGGIN' Happens" />
-
-      {/* Vault */}
-      <Card style={{ padding:24, marginBottom:24 }}>
-        <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:16 }}>
-          <div>
-            <div style={{ fontSize:10, fontWeight:700, letterSpacing:"0.3em", textTransform:"uppercase", color:G.gold, marginBottom:4 }}>Saves to your browser</div>
-            <div style={{ fontFamily:"'Bebas Neue',cursive", fontSize:22, letterSpacing:"0.06em" }}>Permanent Photo Vault 📸</div>
-          </div>
-          <label style={{ fontSize:11, fontWeight:700, letterSpacing:"0.15em", textTransform:"uppercase", padding:"11px 18px", borderRadius:8, cursor:"pointer", background:G.ink, color:"#fff", display:"inline-flex", alignItems:"center", gap:6 }}>
-            + Upload Photo
-            <input type="file" accept="image/*" onChange={upload} style={{ display:"none" }} />
-          </label>
-        </div>
-        <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fill, minmax(90px,1fr))", gap:10, minHeight:100, background:G.cream, border:`2px dashed ${G.border}`, borderRadius:14, padding:14 }}>
-          {vault.length === 0 && <div style={{ gridColumn:"1/-1", textAlign:"center", color:"#AAA", fontSize:12, fontWeight:600, letterSpacing:"0.1em", textTransform:"uppercase", padding:24 }}>No photos yet — upload your first band shot!</div>}
-          {vault.map((img,i) => (
-            <div key={i} style={{ position:"relative", borderRadius:10, overflow:"hidden", aspectRatio:"1", background:G.border }}>
-              <img src={img} alt="" style={{ width:"100%", height:"100%", objectFit:"cover" }} />
-              <button onClick={()=>delPhoto(i)} style={{ position:"absolute", top:4, right:4, background:"rgba(0,0,0,0.7)", border:"none", color:"#fff", borderRadius:"50%", width:22, height:22, cursor:"pointer", fontSize:12, display:"flex", alignItems:"center", justifyContent:"center" }}>✕</button>
-            </div>
-          ))}
-        </div>
-      </Card>
-
-      {/* Flyers */}
-      <div style={{ fontFamily:"'Bebas Neue',cursive", fontSize:26, letterSpacing:"0.06em", marginBottom:20 }}>Designer Flyer Studio 🎨</div>
-      <div style={{ display:"grid", gridTemplateColumns:"repeat(3,1fr)", gap:20 }}>
-
-        {/* Neon */}
-        <div>
-          <div style={{ background:"linear-gradient(145deg,#06060F 0%,#0D0D2B 100%)", border:"2px solid #4040CC", borderRadius:16, padding:24, minHeight:380, display:"flex", flexDirection:"column", justifyContent:"space-between" }}>
-            <div>
-              <div style={{ fontSize:9, fontWeight:700, letterSpacing:"0.3em", textTransform:"uppercase", color:"#8080FF", marginBottom:6 }}>Live on Stage</div>
-              <div style={{ fontFamily:"'Bebas Neue',cursive", fontSize:32, color:"#fff", letterSpacing:"0.06em", lineHeight:1, transform:"rotate(-1deg)", display:"inline-block" }}>IT DON'T MATTER</div>
-              <div style={{ background:"#CC2200", color:"#fff", fontSize:9, fontWeight:700, letterSpacing:"0.2em", textTransform:"uppercase", padding:"3px 9px", display:"inline-block", marginTop:8, borderRadius:3 }}>LIVE TONIGHT</div>
-            </div>
-            <div style={{ borderTop:"1px solid rgba(255,255,255,0.1)", paddingTop:14 }}>
-              <input value={neonVenue} onChange={e=>setNeonVenue(e.target.value)} style={{ background:"transparent", border:"none", borderBottom:"1px solid rgba(255,255,255,0.3)", color:"#fff", fontWeight:900, fontSize:16, width:"100%", outline:"none", padding:"3px 0", textAlign:"center", marginBottom:6 }} />
-              <input value={neonDate} onChange={e=>setNeonDate(e.target.value)} style={{ background:"transparent", border:"none", borderBottom:"1px solid rgba(128,128,255,0.3)", color:"#8080FF", fontSize:11, width:"100%", outline:"none", padding:"3px 0", textAlign:"center", letterSpacing:"0.15em" }} />
-            </div>
-          </div>
-          <div style={{ marginTop:8 }}>
-            <CopyBtn text={flyerText(neonVenue, neonDate, "Southern Rock & Blues")} label="Copy Flyer Text" variant="ink" />
-          </div>
-        </div>
-
-        {/* Rustic */}
-        <div>
-          <div style={{ background:"linear-gradient(160deg,#2C1A0E 0%,#4A2C12 100%)", border:`3px solid ${G.gold}`, borderRadius:16, padding:24, minHeight:380, display:"flex", flexDirection:"column", justifyContent:"space-between" }}>
-            <div>
-              <div style={{ fontSize:9, fontWeight:700, letterSpacing:"0.3em", textTransform:"uppercase", color:G.goldLight, marginBottom:8 }}>Southern Rock & Blues</div>
-              <div style={{ fontFamily:"'Playfair Display',serif", fontSize:30, fontStyle:"italic", color:"#fff", lineHeight:1.1, marginBottom:6 }}>It Don't Matter</div>
-              <div style={{ width:40, height:2, background:G.gold, marginBottom:10 }}></div>
-              <div style={{ fontSize:10, color:"#aaa", letterSpacing:"0.15em", textTransform:"uppercase", fontWeight:600 }}>Live Blues • Southern Rock • Good Times</div>
-            </div>
-            <div style={{ borderTop:`1px solid rgba(201,168,76,0.3)`, paddingTop:14 }}>
-              <input value={rusticVenue} onChange={e=>setRusticVenue(e.target.value)} style={{ background:"transparent", border:"none", borderBottom:`1px solid rgba(201,168,76,0.4)`, color:"#fff", fontWeight:900, fontSize:16, width:"100%", outline:"none", padding:"3px 0", textAlign:"center", marginBottom:6, textTransform:"uppercase" }} />
-              <input value={rusticDate} onChange={e=>setRusticDate(e.target.value)} style={{ background:"transparent", border:"none", borderBottom:`1px solid rgba(201,168,76,0.2)`, color:G.goldLight, fontSize:11, width:"100%", outline:"none", padding:"3px 0", textAlign:"center", letterSpacing:"0.15em" }} />
-            </div>
-          </div>
-          <div style={{ marginTop:8 }}>
-            <CopyBtn text={flyerText(rusticVenue, rusticDate, "Southern Rock & Blues")} label="Copy Flyer Text" variant="ink" />
-          </div>
-        </div>
-
-        {/* Patio */}
-        <div>
-          <div style={{ background:"linear-gradient(160deg,#FFF5E8 0%,#FFE4B8 100%)", border:"2px solid #8B5A2B", borderRadius:16, padding:24, minHeight:380, display:"flex", flexDirection:"column", justifyContent:"space-between" }}>
-            <div>
-              <div style={{ fontSize:9, fontWeight:700, letterSpacing:"0.3em", textTransform:"uppercase", color:"#8B5A2B", marginBottom:8 }}>Acoustic Patio Sessions</div>
-              <div style={{ fontFamily:"'Playfair Display',serif", fontSize:30, fontStyle:"italic", color:"#3D2000", lineHeight:1.1, marginBottom:6 }}>It Don't Matter</div>
-              <div style={{ width:40, height:2, background:"#8B5A2B", marginBottom:10 }}></div>
-              <div style={{ fontSize:10, color:"#8B5A2B", letterSpacing:"0.15em", textTransform:"uppercase", fontWeight:600 }}>Chill • Family Vibe • Good Music</div>
-            </div>
-            <div>
-              <input value={patioVenue} onChange={e=>setPatioVenue(e.target.value)} style={{ background:"transparent", border:"none", borderBottom:"1px solid rgba(100,60,0,0.3)", color:"#3D2000", fontWeight:900, fontSize:16, width:"100%", outline:"none", padding:"3px 0", textAlign:"center", marginBottom:6, textTransform:"uppercase" }} />
-              <input value={patioDate} onChange={e=>setPatioDate(e.target.value)} style={{ background:"transparent", border:"none", borderBottom:"1px solid rgba(100,60,0,0.2)", color:"#8B5A2B", fontSize:11, width:"100%", outline:"none", padding:"3px 0", textAlign:"center", letterSpacing:"0.15em" }} />
-            </div>
-          </div>
-          <div style={{ marginTop:8 }}>
-            <CopyBtn text={flyerText(patioVenue, patioDate, "Acoustic Patio Sessions")} label="Copy Flyer Text" variant="ink" />
-          </div>
-        </div>
-
-      </div>
-    </div>
-  );
-}
-
-function TabPlay() {
-  const allText = SETS.map(s => `${s.name}:\n${s.songs.map((sg,i)=>`${i+1}. ${sg}`).join("\n")}`).join("\n\n");
-  return (
-    <div>
-      <SectionHeader label="Digitized Repertoire" title="Play That GIGGIN' Music 🎸" />
-
-      {/* Setlists */}
-      <DarkCard style={{ padding:24, marginBottom:24 }}>
-        <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:20 }}>
-          <div style={{ fontFamily:"'Bebas Neue',cursive", fontSize:26, color:G.gold, letterSpacing:"0.08em" }}>IT DON'T MATTER — Master Setlist</div>
-          <CopyBtn text={allText} label="Copy All Sets" variant="gold" />
-        </div>
-        <div style={{ display:"grid", gridTemplateColumns:"repeat(4,1fr)", gap:20 }}>
-          {SETS.map(s => (
-            <div key={s.name}>
-              <div style={{ fontFamily:"'Bebas Neue',cursive", fontSize:18, color:G.gold, letterSpacing:"0.1em", borderBottom:"1px solid #333", paddingBottom:8, marginBottom:12 }}>{s.name}</div>
-              <ol style={{ listStyle:"none", padding:0, margin:0, counterReset:"songs" }}>
-                {s.songs.map((song,i) => (
-                  <li key={song} style={{ fontSize:11, fontWeight:600, letterSpacing:"0.05em", textTransform:"uppercase", color:"#ccc", padding:"5px 0", borderBottom:"1px solid #1e1e1e", display:"flex", alignItems:"center", gap:8 }}>
-                    <span style={{ color:"#444", fontSize:10, minWidth:20 }}>{String(i+1).padStart(2,"0")}</span>
-                    {song}
-                  </li>
-                ))}
-              </ol>
-            </div>
-          ))}
-        </div>
-      </DarkCard>
-
-      {/* Song Library */}
-      <Card style={{ padding:24, marginBottom:24 }}>
-        <div style={{ fontSize:10, fontWeight:700, letterSpacing:"0.3em", textTransform:"uppercase", color:G.gold, marginBottom:6 }}>Full Song Library by Genre</div>
-        <div style={{ fontFamily:"'Bebas Neue',cursive", fontSize:22, letterSpacing:"0.06em", marginBottom:16 }}>Master Song Library</div>
-        {SONG_LIBRARY.map(cat => (
-          <div key={cat.genre} style={{ marginBottom:20 }}>
-            <div style={{ fontSize:11, fontWeight:700, letterSpacing:"0.2em", textTransform:"uppercase", color:G.gold, marginBottom:10 }}>{cat.genre}</div>
-            <div style={{ display:"flex", flexWrap:"wrap", gap:6 }}>
-              {cat.songs.map(s => <SongTag key={s} text={s} />)}
-            </div>
-          </div>
-        ))}
-      </Card>
-
-      {/* Roster */}
-      <div style={{ fontFamily:"'Bebas Neue',cursive", fontSize:26, letterSpacing:"0.06em", marginBottom:16 }}>The Talent 🎤</div>
-      <div style={{ display:"grid", gridTemplateColumns:"repeat(4,1fr)", gap:14 }}>
-        {[
-          { name:"LAW", role:"Vocals / Acoustic", bio:"The front engine. Gravel grit and soul of the IDM sound.", special:false },
-          { name:"BRUCE", role:"Lead Electric", bio:"Pure vintage Texas SRV blues-rock spirit. When Bruce plays, the room listens.", special:false },
-          { name:"BEEEEEILLLL", role:"Cajon / Vocals", bio:"The high-energy party vibe engine. If the crowd's dancing, it's Bill's fault. 😄", special:true },
-          { name:"DAN", role:"Percussion / Congas", bio:"The rock-solid rhythmic anchor. Quiet, steady, and the heartbeat of every set.", special:false },
-        ].map(m => (
-          <div key={m.name} style={{ background:G.card, border:`1px solid ${G.border}`, borderBottom:`4px solid ${m.special ? G.gold : G.border}`, borderRadius:14, padding:20, position:"relative", overflow:"hidden" }}>
-            <div style={{ position:"absolute", top:0, left:0, width:4, height:"100%", background:G.gold }}></div>
-            <div style={{ fontFamily:"'Bebas Neue',cursive", fontSize: m.name.length>6 ? 20 : 26, letterSpacing:"0.06em", lineHeight:1 }}>{m.name}</div>
-            <div style={{ fontSize:10, fontWeight:700, letterSpacing:"0.2em", textTransform:"uppercase", color:G.gold, margin:"4px 0 8px" }}>{m.role}</div>
-            <div style={{ fontSize:12, color:"#666", fontStyle:"italic" }}>{m.bio}</div>
-          </div>
-        ))}
-      </div>
-    </div>
-  );
-}
-
-function SongTag({ text }) {
-  const [copied, setCopied] = useState(false);
-  return (
-    <span onClick={()=>{ navigator.clipboard.writeText(text).catch(()=>{}); setCopied(true); setTimeout(()=>setCopied(false),1500); }}
-      style={{ background: copied ? G.gold : G.cream, border:`1px solid ${G.border}`, borderRadius:6, padding:"5px 10px", fontSize:11, fontWeight:600, color: copied ? G.ink : "#444", cursor:"pointer", transition:"all 0.15s" }}>
-      {copied ? "✅" : text}
-    </span>
-  );
-}
-
-function TabBehind() {
-  const [pay, setPay] = useState("");
-  const [tips, setTips] = useState("");
-  const [tab, setTab] = useState("");
-  const [tipout, setTipout] = useState("");
-  const [venue, setVenue] = useState("");
-  const [date, setDate] = useState("");
-  const [history, setHistory] = useState(() => JSON.parse(localStorage.getItem("idm_ledger") || "[]"));
-  const [checks, setChecks] = useState({ mama: Array(6).fill(false), guys: Array(6).fill(false) });
-
-  const net   = (parseFloat(pay)||0) + (parseFloat(tips)||0) - (parseFloat(tab)||0) - (parseFloat(tipout)||0);
-  const split = net / 4;
-
-  const log = () => {
-    if (net <= 0) return;
-    const record = { venue: venue||"Unknown Venue", date: date||"TBD", net:`$${net.toFixed(0)}`, split:`$${split.toFixed(0)}`, id:Date.now() };
-    const updated = [...history, record];
-    setHistory(updated);
-    localStorage.setItem("idm_ledger", JSON.stringify(updated));
-    setPay(""); setTips(""); setTab(""); setTipout(""); setVenue(""); setDate("");
-  };
-
-  const delRecord = (id) => {
-    const updated = history.filter(h=>h.id!==id);
-    setHistory(updated);
-    localStorage.setItem("idm_ledger", JSON.stringify(updated));
-  };
-
-  return (
-    <div>
-      <SectionHeader label="Financial Management" title="Behind the GIGGINS 💰" />
-
-      <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:20, marginBottom:20 }}>
-        <Card style={{ padding:24 }}>
-          <div style={{ fontSize:10, fontWeight:700, letterSpacing:"0.3em", textTransform:"uppercase", color:G.gold, marginBottom:16 }}>None of Your GIGGIN' Business</div>
-          <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:12, marginBottom:16 }}>
-            <div>
-              <div style={{ fontSize:10, fontWeight:700, letterSpacing:"0.2em", textTransform:"uppercase", color:"#999", marginBottom:6 }}>Venue</div>
-              <input value={venue} onChange={e=>setVenue(e.target.value)} placeholder="Will Henry's Pub" style={{ width:"100%", padding:"10px 14px", borderRadius:10, border:`1.5px solid ${G.border}`, background:G.cream, fontSize:13, fontWeight:500, outline:"none" }} />
-            </div>
-            <div>
-              <div style={{ fontSize:10, fontWeight:700, letterSpacing:"0.2em", textTransform:"uppercase", color:"#999", marginBottom:6 }}>Date</div>
-              <input value={date} onChange={e=>setDate(e.target.value)} placeholder="MM/DD/YY" style={{ width:"100%", padding:"10px 14px", borderRadius:10, border:`1.5px solid ${G.border}`, background:G.cream, fontSize:13, fontWeight:500, outline:"none" }} />
-            </div>
-          </div>
-          {[["Base Pay","pay",setPay,pay,false],["Cash Tips","tips",setTips,tips,false],["Band Tab","tab",setTab,tab,true],["Tip-Out","tipout",setTipout,tipout,true]].map(([label,id,setter,val,red])=>(
-            <div key={id} style={{ display:"flex", justifyContent:"space-between", alignItems:"center", padding:"12px 0", borderBottom:`1px solid ${G.border}` }}>
-              <div style={{ fontSize:12, fontWeight:700, letterSpacing:"0.1em", textTransform:"uppercase", color: red?"#B91C1C":"#666" }}>
-                {label} <span style={{ color: red?"#B91C1C":G.green }}>{red?"(−)":"(+)"}</span>
-              </div>
-              <input type="number" value={val} onChange={e=>setter(e.target.value)} placeholder="0" style={{ width:100, textAlign:"right", padding:"7px 10px", borderRadius:8, border:`1.5px solid ${red?"#FCA5A5":G.border}`, background: red?"#FFF5F5":G.cream, fontSize:16, fontWeight:700, color: red?"#B91C1C":G.ink, outline:"none" }} />
-            </div>
-          ))}
-        </Card>
-
-        <Card style={{ padding:24, display:"flex", flexDirection:"column", justifyContent:"center", alignItems:"center", textAlign:"center", background:"linear-gradient(160deg,#F9F7F2 0%,#fff 100%)" }}>
-          <div style={{ fontSize:10, fontWeight:700, letterSpacing:"0.25em", textTransform:"uppercase", color:"#999", marginBottom:8 }}>Net Show Profit</div>
-          <div style={{ fontFamily:"'Bebas Neue',cursive", fontSize:68, color:G.green, lineHeight:1, marginBottom:20 }}>${Math.max(0,net).toFixed(0)}</div>
-          <div style={{ height:1, background:G.border, width:"80%", margin:"0 auto 20px" }}></div>
-          <div style={{ fontSize:10, fontWeight:700, letterSpacing:"0.25em", textTransform:"uppercase", color:"#999", marginBottom:8 }}>4-Way IDM Split</div>
-          <div style={{ fontFamily:"'Bebas Neue',cursive", fontSize:40, color:G.ink, lineHeight:1, marginBottom:24 }}>${Math.max(0,split).toFixed(0)}</div>
-          <Btn onClick={log} variant="green">Log Gig to History ☁️</Btn>
-        </Card>
-      </div>
-
-      {/* History */}
-      <Card style={{ padding:24, marginBottom:20 }}>
-        <div style={{ fontSize:10, fontWeight:700, letterSpacing:"0.3em", textTransform:"uppercase", color:G.gold, marginBottom:6 }}>Saved Records</div>
-        <div style={{ fontFamily:"'Bebas Neue',cursive", fontSize:20, letterSpacing:"0.06em", marginBottom:16 }}>Show Ledger History</div>
-        {history.length === 0 && <p style={{ color:"#888", fontStyle:"italic", fontSize:13 }}>No shows logged yet.</p>}
-        <div style={{ display:"grid", gridTemplateColumns:"repeat(4,1fr)", gap:12 }}>
-          {[...history].reverse().map(l => (
-            <div key={l.id} style={{ background:G.cream, border:`1px solid ${G.border}`, borderRadius:12, padding:14, textAlign:"center", position:"relative" }}>
-              <button onClick={()=>delRecord(l.id)} style={{ position:"absolute", top:8, right:8, background:"none", border:"none", color:"#ccc", cursor:"pointer", fontSize:13 }}>✕</button>
-              <div style={{ fontSize:11, fontWeight:700, letterSpacing:"0.15em", textTransform:"uppercase", color:G.gold, marginBottom:4, paddingRight:16 }}>{l.venue}</div>
-              <div style={{ fontSize:10, color:"#999", marginBottom:10 }}>{l.date}</div>
-              <div style={{ fontFamily:"'Bebas Neue',cursive", fontSize:30, color:G.green, lineHeight:1 }}>{l.net}</div>
-              <div style={{ fontSize:10, color:"#666", marginTop:4 }}>Each: {l.split}</div>
-            </div>
-          ))}
-        </div>
-      </Card>
-
-      {/* Checklists */}
-      <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:16 }}>
-        {[["Just GIG It — Mama & Kim Checklist ✅", MAMA_CHECKS, "mama"],["Guys Gotta GIG It Too 🎸", GUYS_CHECKS, "guys"]].map(([title,items,key])=>(
-          <Card key={key} style={{ padding:24 }}>
-            <div style={{ fontFamily:"'Bebas Neue',cursive", fontSize:18, letterSpacing:"0.06em", marginBottom:16 }}>{title}</div>
-            {items.map((item,i)=>(
-              <div key={i} style={{ display:"flex", alignItems:"center", gap:12, padding:"10px 0", borderBottom:`1px solid ${G.border}` }}>
-                <input type="checkbox" checked={checks[key][i]} onChange={()=>{ const c={...checks}; c[key]=[...c[key]]; c[key][i]=!c[key][i]; setChecks(c); }} style={{ width:18, height:18, accentColor:G.gold, cursor:"pointer", flexShrink:0 }} />
-                <label style={{ fontSize:13, fontWeight:500, color:"#333", cursor:"pointer" }}>{item}</label>
-              </div>
-            ))}
-          </Card>
-        ))}
-      </div>
-    </div>
-  );
-}
-
-function TabRoad() {
-  return (
-    <div>
-      <SectionHeader label="Growth Strategy" title="GIG It Up a Notch ✨" />
-      <div style={{ display:"grid", gridTemplateColumns:"2fr 1fr", gap:20 }}>
-        <div style={{ display:"flex", flexDirection:"column", gap:16 }}>
-          {[
-            { phase:"Phase 1", title:"Regional Foothold — Local Domination", color:G.gold, text:"Secure 3 anchor venues in Gwinnett for monthly rotation. Prioritize lake venues and patio decks. Build word-of-mouth through the backyard/family vibe that is the core of IDM's identity." },
-            { phase:"Phase 2", title:"Private & Corporate Events", color:G.rust, text:"Direct outreach to neighborhood coordinators and private event planners. Position for high-end casual functions — lakehouse parties, weddings, corporate cookouts. The backyard vibe travels well." },
-            { phase:"Phase 3", title:"Festival Circuit & Regional Touring", color:"#4A90D9", text:"Target regional festivals similar to Sneakin' Creek. Submit EPK to booking agencies. Build a shareable social following that makes venues come to you instead of the other way around." },
-          ].map(p=>(
-            <Card key={p.phase} style={{ padding:24, borderLeft:`4px solid ${p.color}` }}>
-              <div style={{ fontSize:10, fontWeight:700, letterSpacing:"0.3em", textTransform:"uppercase", color:p.color, marginBottom:4 }}>{p.phase}</div>
-              <div style={{ fontFamily:"'Bebas Neue',cursive", fontSize:20, letterSpacing:"0.06em", marginBottom:10 }}>{p.title}</div>
-              <p style={{ fontSize:13, color:"#555", lineHeight:1.7, fontStyle:"italic" }}>{p.text}</p>
-            </Card>
-          ))}
-        </div>
-        <DarkCard style={{ padding:24, display:"flex", flexDirection:"column", gap:12 }}>
-          <div style={{ fontFamily:"'Bebas Neue',cursive", fontSize:20, color:G.gold, letterSpacing:"0.08em", marginBottom:8 }}>Asset Toolkit</div>
-          <CopyBtn text={NEWSLETTER} label="✉️ Fan Newsletter" variant="gold" />
-          <CopyBtn text={RIDER} label="🔌 Tech Rider / Stage Spec" variant="outline" />
-          <CopyBtn text={EPK} label="📄 EPK / Artist Bio" variant="outline" />
-          <div style={{ height:1, background:"#222", margin:"8px 0" }}></div>
-          <div style={{ fontSize:10, fontWeight:700, letterSpacing:"0.2em", textTransform:"uppercase", color:G.gold, marginBottom:8 }}>Target Venues</div>
-          {VENUES.map(v=>(
-            <div key={v.name} style={{ fontSize:12, color:"#aaa", lineHeight:1.6 }}>📍 {v.name} — {v.loc}</div>
-          ))}
-        </DarkCard>
-      </div>
-    </div>
-  );
-}
-
-function TabSweet() {
-  return (
-    <div style={{ background:"linear-gradient(135deg,#1a0a0a 0%,#0d0d0d 100%)", border:`1px solid ${G.gold}`, borderRadius:20, padding:48, textAlign:"center", position:"relative", overflow:"hidden" }}>
-      <div style={{ position:"absolute", top:-60, right:-60, width:200, height:200, background:`radial-gradient(circle, rgba(201,168,76,0.15) 0%, transparent 70%)`, pointerEvents:"none" }}></div>
-      <div style={{ fontSize:60, marginBottom:20 }}>💝</div>
-      <div style={{ fontFamily:"'Bebas Neue',cursive", fontSize:46, color:G.gold, letterSpacing:"0.06em", marginBottom:8 }}>Sweet Home GIGGIN'</div>
-      <div style={{ fontFamily:"'Playfair Display',serif", fontStyle:"italic", fontSize:14, color:"#888", letterSpacing:"0.2em", textTransform:"uppercase", marginBottom:32 }}>For the Love of GIG</div>
-      <div style={{ maxWidth:600, margin:"0 auto" }}>
-        <p style={{ fontSize:18, color:"#ccc", lineHeight:1.8, marginBottom:20 }}>Mama & Kim — I built this for you to make the journey as smooth as possible.</p>
-        <p style={{ fontSize:18, color:"#ccc", lineHeight:1.8, marginBottom:20 }}>No more forgotten venue info, lost gig photos, or loose setlist scraps. Everything you need to professionally represent Law, Bruce, Bill, and Dan is right here in your pocket.</p>
-        <p style={{ fontSize:18, color:"#ccc", lineHeight:1.8, marginBottom:36 }}>You two are the engine behind the music. ✨</p>
-        <div style={{ fontFamily:"'Playfair Display',serif", fontStyle:"italic", fontSize:28, color:G.gold, transform:"rotate(-2deg)", display:"inline-block" }}>We love you! ✨</div>
-        <div style={{ marginTop:32, paddingTop:24, borderTop:"1px solid #222" }}>
-          <p style={{ fontSize:11, fontWeight:700, letterSpacing:"0.3em", textTransform:"uppercase", color:"#555" }}>"It Don't Matter… I'm GIGGIN'" 🎸</p>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-function TabCovered() {
-  return (
-    <div>
-      <SectionHeader label="Booking & Outreach" title="GIG You Covered 🛶" />
-      <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:20, marginBottom:20 }}>
-        <Card style={{ padding:24, display:"flex", flexDirection:"column", gap:14 }}>
-          <div>
-            <div style={{ fontSize:10, fontWeight:700, letterSpacing:"0.3em", textTransform:"uppercase", color:G.gold, marginBottom:4 }}>Venue Booking Email</div>
-            <div style={{ fontFamily:"'Bebas Neue',cursive", fontSize:22, letterSpacing:"0.06em", marginBottom:14 }}>Booking Pitch Kit 📧</div>
-          </div>
-          <div style={{ background:G.cream, border:`1.5px solid ${G.border}`, borderRadius:12, padding:18, fontSize:12, lineHeight:1.9, color:"#333", flex:1 }}>
-            <div style={{ fontSize:10, fontWeight:700, letterSpacing:"0.15em", textTransform:"uppercase", color:G.gold, marginBottom:10 }}>Subject: Live Music Booking — It Don't Matter (4-Piece Rock Band)</div>
-            {BOOKING_EMAIL.split("\n").slice(2).map((line,i)=><div key={i}>{line || <br/>}</div>)}
-          </div>
-          <CopyBtn text={BOOKING_EMAIL} label="Copy Email" variant="gold" />
-        </Card>
-        <Card style={{ padding:24 }}>
-          <div style={{ fontSize:10, fontWeight:700, letterSpacing:"0.3em", textTransform:"uppercase", color:G.gold, marginBottom:4 }}>Regional Targets</div>
-          <div style={{ fontFamily:"'Bebas Neue',cursive", fontSize:22, letterSpacing:"0.06em", marginBottom:16 }}>Venue Hit List 📍</div>
-          <div style={{ display:"flex", flexDirection:"column", gap:10 }}>
-            {VENUES.map((v,i)=>(
-              <div key={v.name} style={{ padding:"12px 14px", background: i===0?"#F0F4FF":G.cream, border: i===0?`1.5px solid #4444CC`:`1px solid ${G.border}`, borderRadius:12, display:"flex", justifyContent:"space-between", alignItems:"center" }}>
-                <div>
-                  <div style={{ fontWeight:700, fontSize:13, color: i===0?"#2222AA":G.ink }}>{v.name} {v.star?"⭐":""}</div>
-                  <div style={{ fontSize:11, color:"#888", marginTop:2 }}>{v.loc} — {v.note}</div>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Livin' the Dream One GIG At a Time</title>
+    <!-- Core layout and styling resources -->
+    <script src="https://cloudflare.com"></script>
+    <script src="https://cloudflare.com"></script>
+    <script src="https://cloudflare.com"></script>
+</head>
+<body style="margin: 0; padding: 0; background-color: #F5F0E8;">
+
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState, useEffect } = React;
+
+        // Custom Layout Data Configuration
+        const SETS = [
+          { name: "SET 1", songs: ["Pride & Joy","Bad Moon Rising","Cold Shot","Whitehouse Rd.","Crazy Mama","Broken Window Serenade","Rock-n-Roll Allnite","Blue On Black","Like a Rolling Stone","Satisfied"] },
+          { name: "SET 2", songs: ["Straight to Hell","I Thank You","Red House","Black Magic Woman","Oye Como Va","Wild Side","Melissa","Peaceful Easy Feeling","Tues. Gone","No Matter What"] },
+          { name: "SET 3", songs: ["Green River","Call Me the Breeze","On the Road Again","Use Me","Cabin Down Below","Feel Like Makin' Love","Little Wing","Love Struck Baby"] },
+          { name: "SET 4", songs: ["Rebel Rebel","Hey Joe","Tues. Gone","Bad Leroy Brown","Midnite Special","Blister in the Sun","Louie Louie","Wagon Wheel"] }
+        ];
+
+        const SONG_LIBRARY = [
+          { genre: "🔵 Blues & Soul", songs: ["Pride & Joy (SRV)","Cold Shot (SRV)","Love Struck Baby (SRV)","Red House (Hendrix)","Hey Joe (Hendrix)","Little Wing (Hendrix)","Use Me (Bill Withers)","I Thank You (Sam & Dave / ZZ Top)"] },
+          { genre: "🌱 Southern Rock & Country", songs: ["Bad Moon Rising (CCR)","Green River (CCR)","Midnite Special (CCR)","Whitehouse Rd. (Tyler Childers)","If Whisky Could Talk (Tyler Childers)","Tues. Gone (Lynyrd Skynyrd)","Call Me the Breeze (JJ Cale)","On the Road Again (Willie Nelson)","Melissa (Allman Brothers)","Can't You See (Marshall Tucker)","Whisky Bent & Hellbound (Hank Jr.)"] },
+          { genre: "🎸 Classic Rock & Party", songs: ["Black Magic Woman / Oye Como Va (Santana)","Like a Rolling Stone (Bob Dylan)","Peaceful Easy Feeling (Eagles)","Rebel Rebel (David Bowie)","Blister in the Sun (Violent Femmes)","Louie Louie (The Kingsmen)","Rock-n-Roll Allnite (KISS)","Feel Like Makin' Love (Bad Company)","Cabin Down Below (Tom Petty)","Straight to Hell (Drivin N Cryin)","Wagon Wheel (OCMS / Darius Rucker)"] }
+        ];
+
+        const CAPTIONS = [
+          { song: "Midnight Special 🚂", text: "Let the Midnight Special shine its light! 🪵 Law hitting those CCR notes tonight—the GIG is officially rolling. See y'all at the bar! #MidnightSpecial #CCR #ItDontMatter #GIGGIN" },
+          { song: "Love Struck Baby 🎸", text: "Bruce channeling pure SRV grit on 'Love Struck Baby' tonight! ⚡️ That Texas blues shuffle keeps the floor moving. #SRV #BluesShuffle #ItDontMatter #GIGGIN" },
+          { song: "Straight to Hell 🥃", text: "Drivin' N' Cryin' vibes in Gwinnett! 🍻 Taking it 'Straight to Hell' with Law and the guys tonight. Pull up an extra barstool! #StraightToHell #ItDontMatter #GIGGIN" },
+          { song: "Pride & Joy 🌅", text: "Nothing like watching Bruce channel the SRV spirit on 'Pride & Joy'. The whole room feels it. 🎸 Come see it live! #PrideAndJoy #SRV #ItDontMatter" },
+          { song: "Wagon Wheel 🎶", text: "Nothing like a whole crowd singing along to 'Wagon Wheel'! 🪕 Law and the guys brought the heat. Come see it live! #WagonWheel #ItDontMatter #GIGGIN" },
+          { song: "Louie Louie 🕺", text: "Always an absolute party the second 'Louie Louie' starts up! 🥳 Spirit's alive and family is here. See you down front! #LouieLouie #IDM #GIGGIN" },
+          { song: "Cabin Down Below 🪵", text: "Mountain air and 'Cabin Down Below' vibes. 🌲 Throwback to Lawrence doing Tom Petty proud. This one always hits different. #TomPetty #CabinDown Below #GIGGIN" },
+          { song: "Cold Shot 🧊", text: "Bruce digging deep into 'Cold Shot' tonight. 🎸 That heavy SRV grit is in the DNA of this band. Come feel it live! #ColdShot #SRV" }
+        ];
+
+        const SLOGANS = {
+          Hype: "Gwinnett County, pull up! 🤠 The guys are geared up and bringing the noise tonight!",
+          Legacy: "Thinking back on those unforgettable nights. Allie's spirit is always right here with us.",
+          Booking: "Now routing weekend dates for the quarter! Bring that signature energy to your venue."
+        };
+
+        function App() {
+          const [activeTab, setActiveTab] = useState("generator");
+          const [activeSet, setActiveSet] = useState("");
+          const [selectedSong, setSelectedSong] = useState("");
+          const [selectedSlogan, setSelectedSlogan] = useState("");
+          const [generatedText, setGeneratedText] = useState("");
+
+          const handleGenerate = () => {
+            let parts = [];
+            if (activeSet) parts.push(`We're hitting you with ${activeSet} tonight!`);
+            if (selectedSong) {
+              const capObj = CAPTIONS.find(c => c.song === selectedSong);
+              if (capObj) parts.push(capObj.text);
+            }
+            if (selectedSlogan) parts.push(SLOGANS[selectedSlogan]);
+            setGeneratedText(parts.join("\n\n"));
+          };
+
+          const TABS = [
+            { id: "generator", label: "Caption Generator" },
+            { id: "library", label: "Song Sets" }
+          ];
+
+          return (
+            <div style={{ fontFamily: "'DM Sans', sans-serif", background: "#F5F0E8", minHeight: "100vh" }}>
+              <style>{`
+                @import url('https://googleapis.com');
+                * { box-sizing: border-box; margin: 0; padding: 0; }
+                select, button, textarea { font-family: inherit; }
+              `}</style>
+
+              {/* Header Design */}
+              <div style={{ background: "#0D0D0D", padding: "16px 20px 8px", position: "sticky", top: 0, zIndex: 100 }}>
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end", maxWidth: "1100px", margin: "0 auto", paddingBottom: "12px" }}>
+                  <div>
+                    <div style={{ fontSize: "9px", letterSpacing: "0.35em", color: "#C9A84C", textTransform: "uppercase", marginBottom: "2px", fontWeight: 600 }}>Giggin' HQ Dashboard</div>
+                    <div style={{ fontFamily: "'Bebas Neue', cursive", fontSize: "clamp(26px, 5vw, 36px)", color: "#FFFFFF", lineHeight: 1, letterSpacing: "0.02em" }}>
+                      Livin' the <span style={{ color: "#C9A84C" }}>Dream</span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Dashboard Navigation Tabs */}
+                <div style={{ maxWidth: "1100px", margin: "0 auto", overflowX: "auto", display: "flex", gap: "24px" }}>
+                  {TABS.map(t => (
+                    <button 
+                      key={t.id} 
+                      onClick={() => setActiveTab(t.id)}
+                      style={{
+                        fontFamily: "'Bebas Neue', cursive",
+                        fontSize: "15px",
+                        letterSpacing: "0.05em",
+                        background: "none",
+                        border: "none",
+                        color: activeTab === t.id ? "#C9A84C" : "#8E8E93",
+                        padding: "6px 0 10px",
+                        cursor: "pointer",
+                        borderBottom: activeTab === t.id ? "2px solid #C9A84C" : "2px solid transparent",
+                        transition: "all 0.2s ease"
+                      }}
+                    >
+                      {t.label}
+                    </button>
+                  ))}
                 </div>
               </div>
-            ))}
-          </div>
-        </Card>
-      </div>
-      <Card style={{ padding:24 }}>
-        <div style={{ fontSize:10, fontWeight:700, letterSpacing:"0.3em", textTransform:"uppercase", color:G.gold, marginBottom:4 }}>Quick Steps</div>
-        <div style={{ fontFamily:"'Bebas Neue',cursive", fontSize:22, letterSpacing:"0.06em", marginBottom:20 }}>Manager's Quick Guide 📖</div>
-        <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:20 }}>
-          {[
-            { title:"To Post on Facebook/Instagram:", steps:["Go to the GIGGIN' it Real tab","Pick a vibe & click to generate a caption","Hit the Copy Caption button","Open Facebook → paste → post! Done ✅"] },
-            { title:"To Update the Tour Schedule:", steps:["Go to Just GIG It","Type in venue name and date","Click Add Confirmed Date","Screenshot the dark poster at the bottom and share!"] },
-          ].map(g=>(
-            <div key={g.title}>
-              <div style={{ fontSize:11, fontWeight:700, letterSpacing:"0.15em", textTransform:"uppercase", color:G.gold, marginBottom:12 }}>{g.title}</div>
-              <ol style={{ fontSize:13, color:"#555", lineHeight:2, paddingLeft:20 }}>
-                {g.steps.map((s,i)=><li key={i}>{s}</li>)}
-              </ol>
+
+              {/* Main Workspace Interface */}
+              <div style={{ maxWidth: "1100px", margin: "0 auto", padding: "28px 16px" }}>
+                {activeTab === "generator" ? (
+                  <div style={{ background: "#FFFFFF", padding: "24px", borderRadius: "12px", boxShadow: "0 4px 20px rgba(0,0,0,0.05)" }}>
+                    <h3 style={{ fontFamily: "'Playfair Display', serif", fontSize: "20px", color: "#0D0D0D", marginBottom: "16px" }}>Build Promotional Social Copy</h3>
+                    
+                    <label style={{ display: "block", fontSize: "12px", color: "#8E8E93", fontWeight: 600, marginBottom: "6px", textTransform: "uppercase" }}>1. Active Set Focus (Optional)</label>
+                    <select onChange={(e) => setActiveSet(e.target.value)} style={{ width: "100%", padding: "12px", marginBottom: "20px", borderRadius: "6px", border: "1px solid #E5E5EA", fontSize: "14px" }}>
+                      <option value="">-- No Set Focus --</option>
+                      {SETS.map(s => <option key={s.name} value={s.name}>{s.name}</option>)}
+                    </select>
+
+                    <label style={{ display: "block", fontSize: "12px", color: "#8E8E93", fontWeight: 600, marginBottom: "6px", textTransform: "uppercase" }}>2. Select Song Context Highlight</label>
+                    <select onChange={(e) => setSelectedSong(e.target.value)} style={{ width: "100%", padding: "12px", marginBottom: "20px", borderRadius: "6px", border: "1px solid #E5E5EA", fontSize: "14px" }}>
+                      <option value="">-- Choose Featured Song Track --</option>
+                      {CAPTIONS.map(c => <option key={c.song} value={c.song}>{c.song}</option>)}
+                    </select>
+
+                    <label style={{ display: "block", fontSize: "12px", color: "#8E8E93", fontWeight: 600, marginBottom: "6px", textTransform: "uppercase" }}>3. Select Structural Slogan Hook</label>
+                    <select onChange={(e) => setSelectedSlogan(e.target.value)} style={{ width: "100%", padding: "12px", marginBottom: "24px", borderRadius: "6px", border: "1px solid #E5E5EA", fontSize: "14px" }}>
+                      <option value="">-- Select Promotional Slogan --</option>
+                      {Object.keys(SLOGANS).map(k => <option key={k} value={k}>{k}</option>)}
+                    </select>
+
+                    <button onClick={handleGenerate} style={{ width: "100%", padding: "14px", background: "#0D0D0D", color: "#C9A84C", border: "none", borderRadius: "6px", fontSize: "15px", fontFamily: "'Bebas Neue', cursive", letterSpacing: "0.06em", cursor: "pointer" }}>Generate Media Package Copy</button>
+
+                    {generatedText && (
+                      <div style={{ marginTop: "24px", background: "#F9F6F0", padding: "20px", borderRadius: "8px", border: "1px solid #EAE4D8" }}>
+                        <h4 style={{ color: "#0D0D0D", fontSize: "14px", fontWeight: 600, marginBottom: "10px" }}>Ready Clipboard Output:</h4>
+                        <textarea readOnly value={generatedText} style={{ width: "100%", height: "120px", padding: "12px", borderRadius: "4px", border: "1px solid #E5E5EA", background: "#FFF", fontSize: "14px", lineHeight: "1.5", resize: "none" }} />
+                      </div>
+                    )}
+                  </div>
+                ) : (
+                  <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))", gap: "20px" }}>
+                    {SETS.map(s => (
+                      <div key={s.name} style={{ background: "#FFFFFF", padding: "20px", borderRadius: "12px", boxShadow: "0 4px 20px rgba(0,0,0,0.05)" }}>
+                        <h3 style={{ fontFamily: "'Bebas Neue', cursive", fontSize: "20px", color: "#C9A84C", borderBottom: "1px solid #F5F0E8", paddingBottom: "8px", marginBottom: "12px" }}>{s.name} Roster</h3>
+                        <ul style={{ listStyleType: "none" }}>
+                          {s.songs.map((song, i) => (
+                            <li key={i} style={{ fontSize: "14px", color: "#3A3A3C", padding: "6px 0", borderBottom: i === s.songs.length - 1 ? "none" : "1px dashed #F2F2F7" }}>{song}</li>
+                          ))}
+                        </ul>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
             </div>
-          ))}
-        </div>
-      </Card>
-    </div>
-  );
-}
+          );
+        }
 
-// ── MAIN APP ──────────────────────────────────────────────────────────────────
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
 
-export default function App() {
-  const [activeTab, setActiveTab] = useState("dash");
-  const [vault, setVault] = useState(() => JSON.parse(localStorage.getItem("idm_vault") || "[]"));
-  const [calendar, setCalendar] = useState(() => JSON.parse(localStorage.getItem("idm_cal") || "[]"));
+</body>
+</html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Livin' the Dream One GIG At a Time</title>
+    <!-- Core layout and styling resources -->
+    <script src="https://cloudflare.com"></script>
+    <script src="https://cloudflare.com"></script>
+    <script src="https://cloudflare.com"></script>
+</head>
+<body style="margin: 0; padding: 0; background-color: #F5F0E8;">
 
-  const tabContent = {
-    dash:    <TabDash calendar={calendar} vaultCount={vault.length} />,
-    real:    <TabReal />,
-    just:    <TabJust calendar={calendar} setCalendar={setCalendar} />,
-    happens: <TabHappens vault={vault} setVault={setVault} />,
-    play:    <TabPlay />,
-    behind:  <TabBehind />,
-    road:    <TabRoad />,
-    sweet:   <TabSweet />,
-    covered: <TabCovered />,
-  };
+    <div id="root"></div>
 
-  return (
-    <div style={{ fontFamily:"'DM Sans', sans-serif", background:"#F5F0E8", minHeight:"100vh", paddingBottom:40 }}>
-      <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Playfair+Display:ital,wght@0,700;0,900;1,700&family=DM+Sans:wght@400;500;700&display=swap');
-        * { box-sizing: border-box; margin: 0; padding: 0; }
-        input::placeholder { color: #aaa; }
-        ::-webkit-scrollbar { height: 4px; }
-        ::-webkit-scrollbar-thumb { background: #C9A84C; border-radius: 2px; }
-      `}</style>
+    <script type="text/babel">
+        const { useState, useEffect } = React;
 
-      {/* Header */}
-      <div style={{ background:"#0D0D0D", padding:"16px 20px 0", position:"sticky", top:0, zIndex:100, boxShadow:"0 4px 24px rgba(0,0,0,0.5)" }}>
-        <div style={{ display:"flex", justifyContent:"space-between", alignItems:"flex-end", marginBottom:14, maxWidth:1100, margin:"0 auto 14px" }}>
-          <div>
-            <div style={{ fontSize:9, letterSpacing:"0.35em", color:"#C9A84C", textTransform:"uppercase", fontWeight:700, display:"block", marginBottom:2 }}>GIGGIN' Management HQ</div>
-            <div style={{ fontFamily:"'Bebas Neue', cursive", fontSize:"clamp(26px,5vw,44px)", color:"#fff", lineHeight:1, letterSpacing:"0.06em" }}>
-              Livin' the <span style={{ color:"#C9A84C" }}>Dream</span>
+        // Custom Layout Data Configuration
+        const SETS = [
+          { name: "SET 1", songs: ["Pride & Joy","Bad Moon Rising","Cold Shot","Whitehouse Rd.","Crazy Mama","Broken Window Serenade","Rock-n-Roll Allnite","Blue On Black","Like a Rolling Stone","Satisfied"] },
+          { name: "SET 2", songs: ["Straight to Hell","I Thank You","Red House","Black Magic Woman","Oye Como Va","Wild Side","Melissa","Peaceful Easy Feeling","Tues. Gone","No Matter What"] },
+          { name: "SET 3", songs: ["Green River","Call Me the Breeze","On the Road Again","Use Me","Cabin Down Below","Feel Like Makin' Love","Little Wing","Love Struck Baby"] },
+          { name: "SET 4", songs: ["Rebel Rebel","Hey Joe","Tues. Gone","Bad Leroy Brown","Midnite Special","Blister in the Sun","Louie Louie","Wagon Wheel"] }
+        ];
+
+        const SONG_LIBRARY = [
+          { genre: "🔵 Blues & Soul", songs: ["Pride & Joy (SRV)","Cold Shot (SRV)","Love Struck Baby (SRV)","Red House (Hendrix)","Hey Joe (Hendrix)","Little Wing (Hendrix)","Use Me (Bill Withers)","I Thank You (Sam & Dave / ZZ Top)"] },
+          { genre: "🌱 Southern Rock & Country", songs: ["Bad Moon Rising (CCR)","Green River (CCR)","Midnite Special (CCR)","Whitehouse Rd. (Tyler Childers)","If Whisky Could Talk (Tyler Childers)","Tues. Gone (Lynyrd Skynyrd)","Call Me the Breeze (JJ Cale)","On the Road Again (Willie Nelson)","Melissa (Allman Brothers)","Can't You See (Marshall Tucker)","Whisky Bent & Hellbound (Hank Jr.)"] },
+          { genre: "🎸 Classic Rock & Party", songs: ["Black Magic Woman / Oye Como Va (Santana)","Like a Rolling Stone (Bob Dylan)","Peaceful Easy Feeling (Eagles)","Rebel Rebel (David Bowie)","Blister in the Sun (Violent Femmes)","Louie Louie (The Kingsmen)","Rock-n-Roll Allnite (KISS)","Feel Like Makin' Love (Bad Company)","Cabin Down Below (Tom Petty)","Straight to Hell (Drivin N Cryin)","Wagon Wheel (OCMS / Darius Rucker)"] }
+        ];
+
+        const CAPTIONS = [
+          { song: "Midnight Special 🚂", text: "Let the Midnight Special shine its light! 🪵 Law hitting those CCR notes tonight—the GIG is officially rolling. See y'all at the bar! #MidnightSpecial #CCR #ItDontMatter #GIGGIN" },
+          { song: "Love Struck Baby 🎸", text: "Bruce channeling pure SRV grit on 'Love Struck Baby' tonight! ⚡️ That Texas blues shuffle keeps the floor moving. #SRV #BluesShuffle #ItDontMatter #GIGGIN" },
+          { song: "Straight to Hell 🥃", text: "Drivin' N' Cryin' vibes in Gwinnett! 🍻 Taking it 'Straight to Hell' with Law and the guys tonight. Pull up an extra barstool! #StraightToHell #ItDontMatter #GIGGIN" },
+          { song: "Pride & Joy 🌅", text: "Nothing like watching Bruce channel the SRV spirit on 'Pride & Joy'. The whole room feels it. 🎸 Come see it live! #PrideAndJoy #SRV #ItDontMatter" },
+          { song: "Wagon Wheel 🎶", text: "Nothing like a whole crowd singing along to 'Wagon Wheel'! 🪕 Law and the guys brought the heat. Come see it live! #WagonWheel #ItDontMatter #GIGGIN" },
+          { song: "Louie Louie 🕺", text: "Always an absolute party the second 'Louie Louie' starts up! 🥳 Spirit's alive and family is here. See you down front! #LouieLouie #IDM #GIGGIN" },
+          { song: "Cabin Down Below 🪵", text: "Mountain air and 'Cabin Down Below' vibes. 🌲 Throwback to Lawrence doing Tom Petty proud. This one always hits different. #TomPetty #CabinDown Below #GIGGIN" },
+          { song: "Cold Shot 🧊", text: "Bruce digging deep into 'Cold Shot' tonight. 🎸 That heavy SRV grit is in the DNA of this band. Come feel it live! #ColdShot #SRV" }
+        ];
+
+        const SLOGANS = {
+          Hype: "Gwinnett County, pull up! 🤠 The guys are geared up and bringing the noise tonight!",
+          Legacy: "Thinking back on those unforgettable nights. Allie's spirit is always right here with us.",
+          Booking: "Now routing weekend dates for the quarter! Bring that signature energy to your venue."
+        };
+
+        function App() {
+          const [activeTab, setActiveTab] = useState("generator");
+          const [activeSet, setActiveSet] = useState("");
+          const [selectedSong, setSelectedSong] = useState("");
+          const [selectedSlogan, setSelectedSlogan] = useState("");
+          const [generatedText, setGeneratedText] = useState("");
+
+          const handleGenerate = () => {
+            let parts = [];
+            if (activeSet) parts.push(`We're hitting you with ${activeSet} tonight!`);
+            if (selectedSong) {
+              const capObj = CAPTIONS.find(c => c.song === selectedSong);
+              if (capObj) parts.push(capObj.text);
+            }
+            if (selectedSlogan) parts.push(SLOGANS[selectedSlogan]);
+            setGeneratedText(parts.join("\n\n"));
+          };
+
+          const TABS = [
+            { id: "generator", label: "Caption Generator" },
+            { id: "library", label: "Song Sets" }
+          ];
+
+          return (
+            <div style={{ fontFamily: "'DM Sans', sans-serif", background: "#F5F0E8", minHeight: "100vh" }}>
+              <style>{`
+                @import url('https://googleapis.com');
+                * { box-sizing: border-box; margin: 0; padding: 0; }
+                select, button, textarea { font-family: inherit; }
+              `}</style>
+
+              {/* Header Design */}
+              <div style={{ background: "#0D0D0D", padding: "16px 20px 8px", position: "sticky", top: 0, zIndex: 100 }}>
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end", maxWidth: "1100px", margin: "0 auto", paddingBottom: "12px" }}>
+                  <div>
+                    <div style={{ fontSize: "9px", letterSpacing: "0.35em", color: "#C9A84C", textTransform: "uppercase", marginBottom: "2px", fontWeight: 600 }}>Giggin' HQ Dashboard</div>
+                    <div style={{ fontFamily: "'Bebas Neue', cursive", fontSize: "clamp(26px, 5vw, 36px)", color: "#FFFFFF", lineHeight: 1, letterSpacing: "0.02em" }}>
+                      Livin' the <span style={{ color: "#C9A84C" }}>Dream</span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Dashboard Navigation Tabs */}
+                <div style={{ maxWidth: "1100px", margin: "0 auto", overflowX: "auto", display: "flex", gap: "24px" }}>
+                  {TABS.map(t => (
+                    <button 
+                      key={t.id} 
+                      onClick={() => setActiveTab(t.id)}
+                      style={{
+                        fontFamily: "'Bebas Neue', cursive",
+                        fontSize: "15px",
+                        letterSpacing: "0.05em",
+                        background: "none",
+                        border: "none",
+                        color: activeTab === t.id ? "#C9A84C" : "#8E8E93",
+                        padding: "6px 0 10px",
+                        cursor: "pointer",
+                        borderBottom: activeTab === t.id ? "2px solid #C9A84C" : "2px solid transparent",
+                        transition: "all 0.2s ease"
+                      }}
+                    >
+                      {t.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Main Workspace Interface */}
+              <div style={{ maxWidth: "1100px", margin: "0 auto", padding: "28px 16px" }}>
+                {activeTab === "generator" ? (
+                  <div style={{ background: "#FFFFFF", padding: "24px", borderRadius: "12px", boxShadow: "0 4px 20px rgba(0,0,0,0.05)" }}>
+                    <h3 style={{ fontFamily: "'Playfair Display', serif", fontSize: "20px", color: "#0D0D0D", marginBottom: "16px" }}>Build Promotional Social Copy</h3>
+                    
+                    <label style={{ display: "block", fontSize: "12px", color: "#8E8E93", fontWeight: 600, marginBottom: "6px", textTransform: "uppercase" }}>1. Active Set Focus (Optional)</label>
+                    <select onChange={(e) => setActiveSet(e.target.value)} style={{ width: "100%", padding: "12px", marginBottom: "20px", borderRadius: "6px", border: "1px solid #E5E5EA", fontSize: "14px" }}>
+                      <option value="">-- No Set Focus --</option>
+                      {SETS.map(s => <option key={s.name} value={s.name}>{s.name}</option>)}
+                    </select>
+
+                    <label style={{ display: "block", fontSize: "12px", color: "#8E8E93", fontWeight: 600, marginBottom: "6px", textTransform: "uppercase" }}>2. Select Song Context Highlight</label>
+                    <select onChange={(e) => setSelectedSong(e.target.value)} style={{ width: "100%", padding: "12px", marginBottom: "20px", borderRadius: "6px", border: "1px solid #E5E5EA", fontSize: "14px" }}>
+                      <option value="">-- Choose Featured Song Track --</option>
+                      {CAPTIONS.map(c => <option key={c.song} value={c.song}>{c.song}</option>)}
+                    </select>
+
+                    <label style={{ display: "block", fontSize: "12px", color: "#8E8E93", fontWeight: 600, marginBottom: "6px", textTransform: "uppercase" }}>3. Select Structural Slogan Hook</label>
+                    <select onChange={(e) => setSelectedSlogan(e.target.value)} style={{ width: "100%", padding: "12px", marginBottom: "24px", borderRadius: "6px", border: "1px solid #E5E5EA", fontSize: "14px" }}>
+                      <option value="">-- Select Promotional Slogan --</option>
+                      {Object.keys(SLOGANS).map(k => <option key={k} value={k}>{k}</option>)}
+                    </select>
+
+                    <button onClick={handleGenerate} style={{ width: "100%", padding: "14px", background: "#0D0D0D", color: "#C9A84C", border: "none", borderRadius: "6px", fontSize: "15px", fontFamily: "'Bebas Neue', cursive", letterSpacing: "0.06em", cursor: "pointer" }}>Generate Media Package Copy</button>
+
+                    {generatedText && (
+                      <div style={{ marginTop: "24px", background: "#F9F6F0", padding: "20px", borderRadius: "8px", border: "1px solid #EAE4D8" }}>
+                        <h4 style={{ color: "#0D0D0D", fontSize: "14px", fontWeight: 600, marginBottom: "10px" }}>Ready Clipboard Output:</h4>
+                        <textarea readOnly value={generatedText} style={{ width: "100%", height: "120px", padding: "12px", borderRadius: "4px", border: "1px solid #E5E5EA", background: "#FFF", fontSize: "14px", lineHeight: "1.5", resize: "none" }} />
+                      </div>
+                    )}
+                  </div>
+                ) : (
+                  <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))", gap: "20px" }}>
+                    {SETS.map(s => (
+                      <div key={s.name} style={{ background: "#FFFFFF", padding: "20px", borderRadius: "12px", boxShadow: "0 4px 20px rgba(0,0,0,0.05)" }}>
+                        <h3 style={{ fontFamily: "'Bebas Neue', cursive", fontSize: "20px", color: "#C9A84C", borderBottom: "1px solid #F5F0E8", paddingBottom: "8px", marginBottom: "12px" }}>{s.name} Roster</h3>
+                        <ul style={{ listStyleType: "none" }}>
+                          {s.songs.map((song, i) => (
+                            <li key={i} style={{ fontSize: "14px", color: "#3A3A3C", padding: "6px 0", borderBottom: i === s.songs.length - 1 ? "none" : "1px dashed #F2F2F7" }}>{song}</li>
+                          ))}
+                        </ul>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
             </div>
-          </div>
-          <div style={{ background:"#C9A84C", color:"#0D0D0D", fontSize:9, fontWeight:900, letterSpacing:"0.2em", textTransform:"uppercase", padding:"6px 12px", borderRadius:4 }}>Mama & Kim HQ</div>
-        </div>
-        <div style={{ maxWidth:1100, margin:"0 auto", overflowX:"auto", display:"flex", gap:2, paddingBottom:0, scrollbarWidth:"none" }}>
-          {TABS.map(t => (
-            <button key={t.id} onClick={()=>setActiveTab(t.id)}
-              style={{ fontFamily:"'Bebas Neue', cursive", fontSize:13, letterSpacing:"0.08em", color: activeTab===t.id ? "#C9A84C" : "#666", padding:"10px 14px", border:"none", background:"transparent", cursor:"pointer", whiteSpace:"nowrap", borderBottom: activeTab===t.id ? "3px solid #C9A84C" : "3px solid transparent", transition:"all 0.2s", flexShrink:0 }}>
-              {t.label}
-            </button>
-          ))}
-        </div>
-      </div>
+          );
+        }
 
-      {/* Content */}
-      <div style={{ maxWidth:1100, margin:"0 auto", padding:"28px 16px" }}>
-        {tabContent[activeTab]}
-      </div>
-    </div>
-  );
-}
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
+
+</body>
+</html>
